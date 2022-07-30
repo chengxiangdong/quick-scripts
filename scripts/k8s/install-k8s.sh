@@ -29,7 +29,7 @@ yum-config-manager --add-repo http://download.docker.com/linux/centos/docker-ce.
 yum -y install docker-ce-${docker_version} docker-ce-cli-${docker_version} containerd.io
 
 echoTitle 'Start docker service'
-systemctl start docker && systemctl enable docker
+systemctl stop docker && systemctl start docker && systemctl enable docker
 
 echoTitle 'Install bash-completion'
 yum -y install bash-completion
