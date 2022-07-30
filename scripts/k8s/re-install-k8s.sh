@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://raw.githubusercontent.com/chengxiangdong/quick-scripts/main/k8s/scripts/re-install-k8s.sh
+# https://raw.githubusercontent.com/chengxiangdong/quick-scripts/main/scripts/k8s/re-install-k8s.sh
 
 docker_version=20.10.2
 kubernetes_version=1.23.0
