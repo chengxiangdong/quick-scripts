@@ -16,6 +16,7 @@ echo 'Installed docker'
 echo '==========================================================================================='
 yum list installed | grep docker
 echo '==========================================================================================='
+systemctl stop docker
 yum -y remove docker*
 yum -y remove docker docker-common docker-selinux docker-engine
 
@@ -26,8 +27,7 @@ yum-config-manager --add-repo http://download.docker.com/linux/centos/docker-ce.
 yum -y install docker-ce-${docker_version} docker-ce-cli-${docker_version}
 
 echoTitle 'Start docker service'
-systemctl start docker && systemctl enable docker
-systemctl restart docker
+systemctl stop docker && systemctl start docker && systemctl enable docker
 
 echoTitle 'Remove existing kubernetes'
 echo 'Installed docker'
