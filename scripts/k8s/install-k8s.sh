@@ -101,4 +101,5 @@ echoTitle 'Install kube-flannel'
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 kubectl get all -A
 
-echoTitle 'All installations are complete.\n"
+echoTitle 'All installations are complete.'
+echo
