@@ -157,6 +157,8 @@ if [ ${node_type} == 'm' ]; then
     rm -rf $HOME/.kube/config
     kubeadm init --service-cidr=10.1.0.0/16 --pod-network-cidr=10.244.0.0/16
 
+    export KUBECONFIG=/etc/kubernetes/admin.conf
+
     echoTitle 'Remove taint from master node'
     kubectl taint nodes --all node-role.kubernetes.io/master-
     kubectl get no -o yaml | grep taint -A 5
