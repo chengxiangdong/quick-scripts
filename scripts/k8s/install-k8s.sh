@@ -83,7 +83,7 @@ function docker_version_wizard(){
       echo -e "${green}${i}${plain}) v${hint}"
     done
 
-    read -p "Which version you do not select(Default: v${docker_versions[0]}):" pick
+    read -p "Which version you do not select(Default: v${docker_versions[0]}): " pick
     [ -z "$pick" ] && pick=1
     expr ${pick} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
@@ -113,7 +113,7 @@ function k8s_node_wizard() {
       hint="${node_types[$i - 1]}"
       echo -e "${green}${i}${plain}) ${hint}"
     done
-    read -p "Which type you do not select(Default: ${node_types[0]}):" pick
+    read -p "Which type you do not select(Default: ${node_types[0]}): " pick
     [ -z "$pick" ] && pick=1
     expr ${pick} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
@@ -135,12 +135,12 @@ function k8s_node_wizard() {
 
 function k8s_version_wizard(){
     while true; do
-      echo -e "Please select a cluster node type:"
+      echo -e "Please select the kubernetes version:"
       for ((i = 1; i <= ${#k8s_versions[@]}; i++)); do
         hint="${k8s_versions[$i - 1]}"
         echo -e "${green}${i}${plain}) kubernetes v${hint}"
       done
-      read -p "Which version you do not select(Default: v${k8s_versions[0]}):" pick
+      read -p "Which version you do not select(Default: v${k8s_versions[0]}): " pick
       [ -z "$pick" ] && pick=1
       expr ${pick} + 1 &>/dev/null
       if [ $? -ne 0 ]; then
