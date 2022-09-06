@@ -113,7 +113,7 @@ function k8s_node_wizard() {
       hint="${node_types[$i - 1]}"
       echo -e "${green}${i}${plain}) ${hint}"
     done
-    read -p "Which type you do not select(Default: v${node_types[0]}):" pick
+    read -p "Which type you do not select(Default: ${node_types[0]}):" pick
     [ -z "$pick" ] && pick=1
     expr ${pick} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
@@ -171,8 +171,8 @@ valid_params
 echo -e "
 \n\e[1;32m Kubernetes cluster is configured as follows: \e[0m\n
    Kubernetes Version:\e[1;32m v${kubernetes_version} \e[0m
-   Docker Version:\e[1;32m v${docker_version} \e[0m
-   Node Type: \e[1;32m${node_type_name}  \e[0m
+       Docker Version:\e[1;32m v${docker_version} \e[0m
+            Node Type:\e[1;32m ${node_type_name}  \e[0m
 "
 echo -e "\n\e[1;32m Press 'Enter' to continue:\e[0m"
 read -p ""
@@ -189,6 +189,7 @@ function uninstall_docker() {
   echo '==========================================================================================='
   yum list installed | grep docker
   echo '==========================================================================================='
+  systemctl stop docker
   yum -y remove docker*
   yum -y remove docker docker-common docker-selinux docker-engine
 }
@@ -211,12 +212,11 @@ function install_docker() {
   echoTitle 'Set daemon.json'
   mkdir -p /etc/docker
   tee /etc/docker/daemon.json <<-'EOF'
-    {
-      "registry-mirrors": ["https://0970d7b7d400f2470fbec00316a03560.mirror.swr.myhuaweicloud.com"],
-      "exec-opts": ["native.cgroupdriver=systemd"]
-    }
-    EOF
-
+{
+  "registry-mirrors": ["https://v16stybc.mirror.aliyuncs.com"],
+  "exec-opts": ["native.cgroupdriver=systemd"]
+}
+EOF
     systemctl daemon-reload && systemctl restart docker
 
     echoTitle 'Testing docker ${docker_version}'
@@ -234,15 +234,16 @@ function uninstall_k8s(){
 }
 
 function install_k8s(){
-    echoTitle 'Disable swap'
-    cat <<EOF >  /etc/sysctl.d/k8s.conf
+  echoTitle 'Disable swap'
+  tee /etc/sysctl.d/k8s.conf <<-'EOF'
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
+
   sysctl -p /etc/sysctl.d/k8s.conf
 
   echoTitle 'Set kubernetes repository'
-  cat >/etc/yum.repos.d/kubernetes.repo <<EOF
+  tee /etc/yum.repos.d/kubernetes.repo <<-'EOF'
 [kubernetes]
 name=Kubernetes
 baseurl=https://repo.huaweicloud.com/kubernetes/yum/repos/kubernetes-el7-x86_64
@@ -281,6 +282,17 @@ function init_master() {
   echoTitle 'Install kube-flannel'
   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
   kubectl get all -A
+
+  echo
+  echo -e "${red}Initialization is complete, please run the following command:${plain}"
+  echo 'As a regular user'
+  echo -e "${green}    mkdir -p $HOME/.kube${plain}"
+  echo -e "${green}    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config${plain}"
+  echo -e "${green}    sudo chown $(id -u):$(id -g) $HOME/.kube/config${plain}"
+  echo
+  echo 'Alternatively, if you are the root user, you can run:'
+  echo -e "${green}    export KUBECONFIG=/etc/kubernetes/admin.conf${plain}"
+  echo
 }
 
 uname -r
@@ -292,6 +304,7 @@ uninstall_k8s
 set -e
 install_docker
 install_k8s
+echo
 
 if [ ${node_type} == 'm' ]; then
   init_master
