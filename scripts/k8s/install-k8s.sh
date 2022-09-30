@@ -299,6 +299,7 @@ uname -r
 # yum -y update
 
 uninstall_docker
+kubeadm reset -f
 uninstall_k8s
 
 set -e
