@@ -20,6 +20,8 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
+skipConfirm="N"
+
 function usage() {
   echo "usage:
   -d Docker version, such as 20.10.2.
@@ -30,7 +32,7 @@ function usage() {
 }
 
 function parse_args() {
-  while getopts "d:k:t:h" OPTION; do
+  while getopts "d:k:t:y:h" OPTION; do
     case $OPTION in
     d)
       docker_version="${OPTARG}"
@@ -40,6 +42,9 @@ function parse_args() {
       ;;
     t)
       node_type="${OPTARG}"
+      ;;
+    y)
+      skipConfirm="Y"
       ;;
     h)
       usage
@@ -162,7 +167,8 @@ function install_wizard() {
   docker_version_wizard
 }
 
-if [ ! -n "${docker_version}" ] || [ ! -n "${kubernetes_version}" ] || [ ${node_type} == 'm' ]; then
+if [ -z "${docker_version}" ] || [ -z "${kubernetes_version}" ] || [ -z "${node_type}" ]; then
+  echo "dockerVersion: ${docker_version}, kubernetesVersion: ${kubernetes_version}, nodeType: ${node_type}"
   install_wizard
 fi
 
@@ -174,8 +180,11 @@ echo -e "
        Docker Version:\e[1;32m v${docker_version} \e[0m
             Node Type:\e[1;32m ${node_type_name}  \e[0m
 "
-echo -e "\n\e[1;32m Press 'Enter' to continue:\e[0m"
-read -p ""
+if [ "${skipConfirm}" != "Y" ]; then
+  echo -e "\n\e[1;32m Press 'Enter' to continue:\e[0m"
+  read -p ""
+fi
+
 
 ##--------------------------------------------------------
 
