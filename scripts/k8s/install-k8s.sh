@@ -2,12 +2,14 @@
 # https://raw.githubusercontent.com/chengxiangdong/quick-scripts/main/scripts/k8s/install-k8s.sh
 
 k8s_versions=(
-"1.23.0"
-"1.22.0"
-"1.21.0"
-"1.20.0"
-"1.19.0"
-"1.18.0"
+"1.25.3"
+"1.24.7"
+"1.23.13"
+"1.22.15"
+"1.21.14"
+"1.20.16"
+"1.19.16"
+"1.18.20"
 )
 docker_versions=(
 "20.10.2 [v1.21+]"
@@ -284,9 +286,9 @@ function init_master() {
 
   export KUBECONFIG=/etc/kubernetes/admin.conf
 
-  echoTitle 'Remove taint from master node'
-  kubectl taint nodes --all node-role.kubernetes.io/master-
-  kubectl get no -o yaml | grep taint -A 5
+  #echoTitle 'Remove taint from master node'
+  # kubectl taint nodes --all node-role.kubernetes.io/master-
+  # kubectl get no -o yaml | grep taint -A 5
 
   echoTitle 'Install kube-flannel'
   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
@@ -301,6 +303,10 @@ function init_master() {
   echo
   echo 'Alternatively, if you are the root user, you can run:'
   echo -e "${green}    export KUBECONFIG=/etc/kubernetes/admin.conf${plain}"
+  echo
+  echo 'Remove taint from master node, you can run:'
+  echo -e "${green}    kubectl taint nodes --all node-role.kubernetes.io/master-"
+  echo -e "${green}    kubectl get no -o yaml | grep taint -A 5"
   echo
 }
 
