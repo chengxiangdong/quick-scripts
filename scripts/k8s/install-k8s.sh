@@ -6,8 +6,8 @@ k8s_versions=(
 "1.24.7"
 "1.23.13"
 "1.22.15"
-"1.21.14"
-"1.20.16"
+"1.21.13"
+"1.20.15"
 "1.19.16"
 "1.18.20"
 )
@@ -257,11 +257,11 @@ EOF
   tee /etc/yum.repos.d/kubernetes.repo <<-'EOF'
 [kubernetes]
 name=Kubernetes
-baseurl=https://repo.huaweicloud.com/kubernetes/yum/repos/kubernetes-el7-x86_64
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
 enabled=1
 gpgcheck=1
-repo_gpgcheck=0
-gpgkey=https://repo.huaweicloud.com/kubernetes/yum/doc/yum-key.gpg https://repo.huaweicloud.com/kubernetes/yum/doc/rpm-package-key.gpg
+repo_gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 
   yum clean all
@@ -282,6 +282,10 @@ function init_master() {
   kubeadm reset -f
   rm -rf /etc/cni/net.d
   rm -rf $HOME/.kube/config
+  
+  rm /etc/containerd/config.toml
+  systemctl restart containerd
+
   kubeadm init --service-cidr=10.1.0.0/16 --pod-network-cidr=10.244.0.0/16
 
   export KUBECONFIG=/etc/kubernetes/admin.conf
